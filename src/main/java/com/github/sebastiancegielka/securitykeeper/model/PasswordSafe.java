@@ -12,67 +12,76 @@ public class PasswordSafe {
         passMap = new HashMap<>();
     }
 
-    public void addEntryToMap(PasswordEntry entry){
+    public int getSize() {
+        return passMap.size();
+    }
+
+    public void addEntryToMap(PasswordEntry entry) {
         passMap.put(entry.getId(), entry);
     }
 
-    public void removeEntry(String websiteName){
-        int index = -1;
-        int count = 0;
-        for (Map.Entry<Integer, PasswordEntry> entry : passMap.entrySet()){
-            if(websiteName.equals(entry.getValue().getWebsite())){
-                index = entry.getKey();
-                count++;
-            }
-        }
-        if(count == 1) passMap.remove(index);
-        else {
-            ConsoleView cV = new ConsoleView();
-            removeEntryByLogin(websiteName, cV.getLogin());
-        }
+    public PasswordEntry getEntryFromMap(int index) {
+        return passMap.get(index);
     }
 
-    private void removeEntryByLogin(String websiteName, String login){
-        int index = -1;
-        for (Map.Entry<Integer, PasswordEntry> entry : passMap.entrySet()){
-            if(websiteName.equals(entry.getValue().getWebsite())
-                    && login.equals(entry.getValue().getLogin())){
-                index = entry.getKey();
-            }
-        }
-        passMap.remove(index);
-    }
-
-    public void getPasswordByWebsite(String websiteName){
+    private boolean isThereMultipleAccountsOnSameWebsite(String websiteName) {
         long count = passMap.values().stream()
                 .filter(pe -> pe.getWebsite().equals(websiteName))
                 .count();
-        if(count == 1){
+        if (count < 1) System.out.println("There's no password saved for given entry");
+        return count == 1;
+    }
+
+    public void removeEntry(String websiteName) {
+        if (isThereMultipleAccountsOnSameWebsite(websiteName)) {
+            int index = passMap.values().stream()
+                    .filter(pe -> pe.getWebsite().equals(websiteName))
+                    .findFirst()
+                    .orElseThrow(RuntimeException::new)
+                    .getId();
+
+            passMap.remove(index);
+        } else {
+            ConsoleView cV = new ConsoleView();
+            removeEntryByLogin(websiteName, cV.getLoginForCheck());
+        }
+    }
+
+    private void removeEntryByLogin(String websiteName, String login) {
+        int index = passMap.values().stream()
+                .filter(pe -> pe.getWebsite().equals(websiteName))
+                .filter(pe -> pe.getLogin().equals(login))
+                .findFirst()
+                .orElseThrow(RuntimeException::new)
+                .getId();
+
+        passMap.remove(index);
+    }
+
+    public void getPasswordByWebsite(String websiteName) {
+        if (isThereMultipleAccountsOnSameWebsite(websiteName)) {
             passMap.values().stream()
                     .filter(pe -> pe.getWebsite().equals(websiteName))
                     .findFirst()
                     .orElseThrow(RuntimeException::new)
-                    .getPassword();
+                    .getPasswordToClipboard();
         } else {
             ConsoleView cV = new ConsoleView();
-            getPasswordByLogin(websiteName, cV.getLogin());
+            getPasswordByLogin(websiteName, cV.getLoginForCheck());
         }
     }
 
-    private void getPasswordByLogin(String websiteName, String login){
+    private void getPasswordByLogin(String websiteName, String login) {
         passMap.values().stream()
                 .filter(pe -> pe.getWebsite().equals(websiteName))
                 .filter(pe -> pe.getLogin().equals(login))
                 .findFirst()
                 .orElseThrow(RuntimeException::new)
-                .getPassword();
+                .getPasswordToClipboard();
     }
 
-    public void changePassword(String websiteName, char[] password){
-        long count = passMap.values().stream()
-                .filter(pe -> pe.getWebsite().equals(websiteName))
-                .count();
-        if(count == 1){
+    public void changePasswordByWebsite(String websiteName, char[] password) {
+        if (isThereMultipleAccountsOnSameWebsite(websiteName)) {
             passMap.values().stream()
                     .filter(pe -> pe.getWebsite().equals(websiteName))
                     .findFirst()
@@ -80,11 +89,11 @@ public class PasswordSafe {
                     .setPassword(password);
         } else {
             ConsoleView cV = new ConsoleView();
-            changePasswordByLogin(websiteName, cV.getLogin(), password);
+            changePasswordByLogin(websiteName, cV.getLoginForCheck(), password);
         }
     }
 
-    private void changePasswordByLogin(String websiteName, String login, char[] password){
+    private void changePasswordByLogin(String websiteName, String login, char[] password) {
         passMap.values().stream()
                 .filter(pe -> pe.getWebsite().equals(websiteName))
                 .filter(pe -> pe.getLogin().equals(login))
@@ -93,6 +102,9 @@ public class PasswordSafe {
                 .setPassword(password);
     }
 
+    public boolean containsWebsite(PasswordEntry pe){
+        return passMap.containsValue(pe);
+    }
 
 
 }
