@@ -33,7 +33,7 @@ public class PasswordManagerTest {
         mapTest.addEntryToMap(test);
         mapTest.addEntryToMap(test2);
 
-        mapTest.removeEntry("a");
+        mapTest.removeEntryByWebsite("a");
         assertThat(mapTest.containsWebsite(test)).isEqualTo(false);
         assertThat(mapTest.containsWebsite(test2)).isEqualTo(true);
     }

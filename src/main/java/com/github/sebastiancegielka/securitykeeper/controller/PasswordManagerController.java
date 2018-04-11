@@ -19,14 +19,30 @@ public class PasswordManagerController {
                 safe.addEntryToMap(entry);
             } else if (action == 2){
                 String website = cV.getWebsiteNameForCheck();
-                safe.removeEntry(website);
+                if(safe.isThereMultipleAccountsOnSameWebsite(website)) {
+                    safe.removeEntryByWebsite(website);
+                } else {
+                    String login = cV.getLoginForCheck();
+                    safe.removeEntryByLogin(website, login);
+                }
             } else if (action == 3){
                 String website = cV.getWebsiteNameForCheck();
-                safe.getPasswordByWebsite(website);
+                if(safe.isThereMultipleAccountsOnSameWebsite(website)) {
+                    safe.getPasswordByWebsite(website);
+                } else {
+                    String login = cV.getLoginForCheck();
+                    safe.getPasswordByLogin(website, login);
+                }
             } else if (action == 4){
                 String website = cV.getWebsiteNameForCheck();
                 char[] pass = cV.getNewPassword();
-                safe.changePasswordByWebsite(website, pass);
+                if(safe.isThereMultipleAccountsOnSameWebsite(website)) {
+                    safe.changePasswordByWebsite(website, pass);
+                } else {
+                    String login = cV.getLoginForCheck();
+                    safe.changePasswordByLogin(website, login, pass);
+                }
+
             }
             close = cV.closeApp();
         }
