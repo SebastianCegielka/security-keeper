@@ -10,10 +10,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileSafeController {
-    private File file = new File("password-manager-file.pwm");
+class FileSafeController {
 
-    public void writeToFile(PasswordSafe safe){
+    void writeToFile(PasswordSafe safe, File file){
         Gson gson = new Gson();
         List<String> entryJson = new ArrayList<>();
         for (int i = 0; i < safe.getSize() ; i++) {
@@ -26,7 +25,7 @@ public class FileSafeController {
         }
     }
 
-    public PasswordSafe readFromFile(){
+    PasswordSafe readFromFile(File file){
         Gson gson = new Gson();
         PasswordSafe safe = new PasswordSafe();
         try {

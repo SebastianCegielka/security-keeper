@@ -23,15 +23,15 @@ public class PasswordEntry {
         this.id = counter++;
     }
 
-    public String getWebsite() {
+    String getWebsite() {
         return website;
     }
 
-    public String getLogin() {
+    String getLogin() {
         return login;
     }
 
-    public String getPassword() {
+    String getPassword() {
         StringBuilder sb = new StringBuilder();
         for (char letter : password) {
             sb.append(letter);
@@ -39,7 +39,7 @@ public class PasswordEntry {
         return sb.toString();
     }
 
-    public void getPasswordToClipboard() {
+    void getPasswordToClipboard() {
         StringBuilder sb = new StringBuilder();
         for (char letter : password) {
             sb.append(letter);
@@ -52,11 +52,11 @@ public class PasswordEntry {
         clipboard.setContents(strSel, null);
     }
 
-    public int getId() {
+    int getId() {
         return id;
     }
 
-    public void setPassword(char[] password) {
+    void setPassword(char[] password) {
         this.password = password;
     }
 
@@ -67,16 +67,47 @@ public class PasswordEntry {
 
         PasswordEntry that = (PasswordEntry) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (!id.equals(that.id)) return false;
         if (website != null ? !website.equals(that.website) : that.website != null) return false;
         return login != null ? login.equals(that.login) : that.login == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id.hashCode();
         result = 31 * result + (website != null ? website.hashCode() : 0);
         result = 31 * result + (login != null ? login.hashCode() : 0);
         return result;
+    }
+
+    public static class Builder {
+        private String website;
+        private String login;
+        private char[] password;
+
+        private Builder(){}
+
+        public static Builder create(){
+            return new Builder();
+        }
+
+        public Builder withWebsite(String website){
+            this.website = website;
+            return this;
+        }
+
+        public Builder withLogin(String login){
+            this.login = login;
+            return this;
+        }
+
+        public Builder withPassword(char[] password){
+            this.password = password;
+            return this;
+        }
+
+        public PasswordEntry build(){
+            return new PasswordEntry(website, login, password);
+        }
     }
 }

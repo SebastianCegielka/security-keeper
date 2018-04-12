@@ -1,63 +1,81 @@
 package com.github.sebastiancegielka.securitykeeper.view;
 
+import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.console.*;
 import com.github.sebastiancegielka.securitykeeper.model.PasswordEntry;
 
-import java.util.Scanner;
 
 public class ConsoleView {
+    private TextIO textIO = TextIoFactory.getTextIO();
 
-
-    public int chooseAction(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("What do you want to do?\n1.add entry : 2.remove entry : 3.get password : 4.change password");
-        int action = sc.nextInt();
-        if(action > 0 && action < 5){
+    public int chooseAction() {
+        int action = textIO.newIntInputReader()
+                .withMinVal(1)
+                .withMaxVal(4)
+                .read("What do you want to do?\n1.add entry\n2.remove entry\n3.get password\n4.change password\nEnter number from 1-4:");
+        if (action > 0 && action < 5) {
             return action;
         } else throw new IllegalArgumentException("That's not a proper value");
     }
 
-    public PasswordEntry getFullEntry(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter website adress:");
-        String address = sc.next();
-        System.out.println("Enter your login:");
-        String login = sc.next();
-        System.out.println("Enter your password:");
-        String password = sc.next();
+    public PasswordEntry getFullEntry() {
+        String address = textIO.newStringInputReader()
+                .withDefaultValue("website")
+                .withMinLength(1)
+                .read("Enter website adress:");
+        String login = textIO.newStringInputReader()
+                .withDefaultValue("admin")
+                .withMinLength(1)
+                .read("Enter your login:");
+        String password = textIO.newStringInputReader()
+                .withMinLength(3)
+                .withInputMasking(true)
+                .read("Enter your password:");
         char[] passArray = new char[password.length()];
-        for (int i = 0; i < password.length() ; i++) {
+        for (int i = 0; i < password.length(); i++) {
             passArray[i] = password.charAt(i);
         }
-        return new PasswordEntry(address, login, passArray);
+        return PasswordEntry.Builder
+                .create()
+                .withWebsite(address)
+                .withLogin(login)
+                .withPassword(passArray)
+                .build();
     }
 
-    public String getWebsiteNameForCheck(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter website adress to which you would like to perform that action: ");
-        return sc.next();
+    public String getWebsiteNameForCheck() {
+        return textIO.newStringInputReader()
+                .withDefaultValue("website")
+                .withMinLength(1)
+                .read("Enter website adress to which you would like to perform that action: ");
     }
 
-    public String getLoginForCheck(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("You've got at least two accounts on this website. Enter a login for the account you meant: ");
-        return sc.next();
+    public String getLoginForCheck() {
+        return textIO.newStringInputReader()
+                .withDefaultValue("admin")
+                .withMinLength(1)
+                .read("You've got at least two accounts on this website. Enter a login for the account you meant: ");
     }
 
-    public char[] getNewPassword(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter your new password:");
-        String password = sc.next();
+    public char[] getNewPassword() {
+        String password = textIO.newStringInputReader()
+                .withMinLength(3)
+                .withInputMasking(true)
+                .read("Enter your password:");
         char[] passArray = new char[password.length()];
-        for (int i = 0; i < password.length() ; i++) {
+        for (int i = 0; i < password.length(); i++) {
             passArray[i] = password.charAt(i);
         }
         return passArray;
     }
 
-    public boolean closeApp(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Do you want to exit?\n Yes : No");
-        String decision = sc.next();
+    public boolean closeApp() {
+        String decision = textIO.newStringInputReader()
+                .withDefaultValue("no")
+                .withInlinePossibleValues("no", "yes")
+                .read("Do you want to exit?");
         return decision.toLowerCase().equals("yes");
+
     }
 }

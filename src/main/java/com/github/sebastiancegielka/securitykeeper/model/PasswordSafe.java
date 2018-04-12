@@ -1,7 +1,5 @@
 package com.github.sebastiancegielka.securitykeeper.model;
 
-import com.github.sebastiancegielka.securitykeeper.view.ConsoleView;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,14 +15,16 @@ public class PasswordSafe {
     }
 
     public void addEntryToMap(PasswordEntry entry) {
-        passMap.put(entry.getId(), entry);
+        if(!checkIfAlreadyInSafe(entry)) {
+            passMap.put(entry.getId(), entry);
+        } else throw new IllegalArgumentException("Password for given website and login is already in safe");
     }
 
     public PasswordEntry getEntryFromMap(int index) {
         return passMap.get(index);
     }
 
-    public boolean isThereMultipleAccountsOnSameWebsite(String websiteName) {
+    public boolean isThereOneAccountsOnTheWebsite(String websiteName) {
         long count = passMap.values().stream()
                 .filter(pe -> pe.getWebsite().equals(websiteName))
                 .count();
@@ -89,6 +89,11 @@ public class PasswordSafe {
 
     public boolean containsWebsite(PasswordEntry pe){
         return passMap.containsValue(pe);
+    }
+
+    boolean checkIfAlreadyInSafe(PasswordEntry pe){
+       return passMap.values().stream()
+               .anyMatch(x -> x.getWebsite().equals(pe.getWebsite()) && x.getLogin().equals(pe.getLogin()));
     }
 
 
