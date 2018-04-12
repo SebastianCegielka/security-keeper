@@ -14,19 +14,22 @@ public class PasswordManagerController {
     private TextIO textIO = TextIoFactory.getTextIO();
     private File file = new File("password-manager-file.pwm");
 
-    public void runApp(){
-
+    public void runApp() {
+        fileSafeController.decryptTheFile(file);
         PasswordSafe safe = fileSafeController.readFromFile(file);
         boolean close = false;
-        while(!close){
+        while (!close) {
             int action = cV.chooseAction();
-            if(action == 1){
+            if (action == 1) {
                 PasswordEntry entry = cV.getFullEntry();
+                try {
                     safe.addEntryToMap(entry);
-
-            } else if (action == 2){
+                } catch (IllegalArgumentException e){
+                    textIO.getTextTerminal().print("There's already an entry for this website and login. Use change password.\n");
+                }
+            } else if (action == 2) {
                 String website = cV.getWebsiteNameForCheck();
-                if(safe.isThereOneAccountsOnTheWebsite(website)) {
+                if (safe.isThereOneAccountsOnTheWebsite(website)) {
                     safe.removeEntryByWebsite(website);
                     textIO.getTextTerminal().print("Entry removed\n");
                 } else {
@@ -35,9 +38,9 @@ public class PasswordManagerController {
                     textIO.getTextTerminal().print("Entry removed\n");
                 }
 
-            } else if (action == 3){
+            } else if (action == 3) {
                 String website = cV.getWebsiteNameForCheck();
-                if(safe.isThereOneAccountsOnTheWebsite(website)) {
+                if (safe.isThereOneAccountsOnTheWebsite(website)) {
                     safe.getPasswordByWebsite(website);
                     textIO.getTextTerminal().print("You've got it in your clipboard!\n");
                 } else {
@@ -46,10 +49,10 @@ public class PasswordManagerController {
                     textIO.getTextTerminal().print("You've got it in your clipboard!\n");
                 }
 
-            } else if (action == 4){
+            } else if (action == 4) {
                 String website = cV.getWebsiteNameForCheck();
                 char[] pass = cV.getNewPassword();
-                if(safe.isThereOneAccountsOnTheWebsite(website)) {
+                if (safe.isThereOneAccountsOnTheWebsite(website)) {
                     safe.changePasswordByWebsite(website, pass);
                 } else {
                     String login = cV.getLoginForCheck();
@@ -57,8 +60,10 @@ public class PasswordManagerController {
                 }
             }
             close = cV.closeApp();
+            textIO.dispose();
         }
         fileSafeController.writeToFile(safe, file);
+        fileSafeController.encryptTheFile(file);
     }
 }
 

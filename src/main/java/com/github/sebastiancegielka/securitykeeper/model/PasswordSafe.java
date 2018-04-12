@@ -14,7 +14,7 @@ public class PasswordSafe {
         return passMap.size();
     }
 
-    public void addEntryToMap(PasswordEntry entry) {
+    public void addEntryToMap(PasswordEntry entry) throws IllegalArgumentException {
         if(!checkIfAlreadyInSafe(entry)) {
             passMap.put(entry.getId(), entry);
         } else throw new IllegalArgumentException("Password for given website and login is already in safe");
