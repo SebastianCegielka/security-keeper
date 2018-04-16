@@ -12,10 +12,6 @@ public class PasswordEntry {
     private String login;
     private char[] password;
 
-    public PasswordEntry() {
-        this.id = counter++;
-    }
-
     public PasswordEntry(String internetPage, String login, char[] password) {
         this.website = internetPage;
         this.login = login;

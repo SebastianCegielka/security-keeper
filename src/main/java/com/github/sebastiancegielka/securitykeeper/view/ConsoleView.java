@@ -9,14 +9,19 @@ import com.github.sebastiancegielka.securitykeeper.model.PasswordEntry;
 public class ConsoleView {
     private TextIO textIO = TextIoFactory.getTextIO();
 
+    public String getCipherKey(){
+        return textIO.newStringInputReader()
+                .withInputMasking(true)
+                .withMinLength(1)
+                .withMaxLength(16)
+                .read("Enter the cipher key");
+    }
+
     public int chooseAction() {
-        int action = textIO.newIntInputReader()
+        return textIO.newIntInputReader()
                 .withMinVal(1)
                 .withMaxVal(4)
                 .read("What do you want to do?\n1.add entry\n2.remove entry\n3.get password\n4.change password\nEnter number from 1-4:");
-        if (action > 0 && action < 5) {
-            return action;
-        } else throw new IllegalArgumentException("That's not a proper value");
     }
 
     public PasswordEntry getFullEntry() {

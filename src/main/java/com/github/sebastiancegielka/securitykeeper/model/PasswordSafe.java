@@ -24,11 +24,15 @@ public class PasswordSafe {
         return passMap.get(index);
     }
 
+    public boolean isThereAnyWebsite(String website){
+        return passMap.values().stream()
+                .anyMatch(x -> x.getWebsite().equals(website));
+    }
+
     public boolean isThereOneAccountsOnTheWebsite(String websiteName) {
         long count = passMap.values().stream()
                 .filter(pe -> pe.getWebsite().equals(websiteName))
                 .count();
-        if (count < 1) System.out.println("There's no password saved for given entry");
         return count == 1;
     }
 

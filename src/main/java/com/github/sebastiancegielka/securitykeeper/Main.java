@@ -4,7 +4,7 @@ import com.github.sebastiancegielka.securitykeeper.controller.PasswordManagerCon
 
 public class Main {
     public static void main(String[] args) {
-        PasswordManagerController test = new PasswordManagerController();
-        test.runApp();
+       PasswordManagerController test = new PasswordManagerController();
+       test.runApp();
     }
 }
